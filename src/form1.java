@@ -1,10 +1,12 @@
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+/* UPDATES 17.02.2025
+* Generalized update logic using connect.updateDatabase(clientName, columns, newValues),
+* making it possible to update any column dynamically instead of being limited to a specific one.
+* */
 
 <<<<<<< HEAD
 /*
@@ -148,7 +150,6 @@ public class form1 extends JFrame {
                     String[] newValues = {newValue};
                     connect.updateDatabase(clientName, columns, newValues);
                 }
-
                 return super.stopCellEditing();
             }
         });
