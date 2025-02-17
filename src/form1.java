@@ -15,7 +15,7 @@ public class form1 extends JFrame {
     private JComboBox<String> comboBox1;
 
     private DefaultTableModel model; // Table model to manage data dynamically
-    private ArrayList<String[]> clients; // List to store client data retrieved from the database
+    private ArrayList<String[]> actors; // List to store client data retrieved from the database
     // Variable to store the old value before editing
 
 
@@ -28,11 +28,11 @@ public class form1 extends JFrame {
 
         // Initialize the table model with column names
         model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"ClientName", "ContactEmail", "PhoneNumber"}); // Updated the Column Names to match the database exactly.
+        model.setColumnIdentifiers(new Object[]{"actor_id", "first_name", "last_name"}); // Updated the Column Names to match the database exactly.
         table1.setModel(model); // Attach model to table
 
         // Execute initial database query to fetch client data
-        clients = connect.executeQuery("SELECT * FROM SimpleCompany.clients", "ClientName", "ContactEmail", "PhoneNumber");
+        actors = connect.executeQuery("SELECT * FROM sakila.actor", "actor_id", "first_name", "last_name");
         // Populate the table with the retrieved data
         updateTable();
 
@@ -43,10 +43,10 @@ public class form1 extends JFrame {
                 // Check which sorting option is selected
                 if (comboBox1.getSelectedIndex() == 0) {
                     // Sort clients by Contact Email in ascending order
-                    clients = connect.executeQuery("SELECT * FROM SimpleCompany.clients ORDER BY ClientName ASC", "ClientName", "ContactEmail", "PhoneNumber");
+                    actors = connect.executeQuery("SELECT * FROM sakila.actor ORDER BY first_name ASC", "actor_id", "first_name", "last_name");
                 } else if (comboBox1.getSelectedIndex() == 1) {
                     // Sort clients by Contact Email in descending order
-                    clients = connect.executeQuery("SELECT * FROM SimpleCompany.clients ORDER BY ContactEmail DESC", "ClientName", "ContactEmail", "PhoneNumber");
+                    actors = connect.executeQuery("SELECT * FROM sakila.actor ORDER BY last_name DESC", "actor_id", "first_name", "last_name");
                 }
                 updateTable(); // Refresh the table to display sorted data
             }
@@ -93,8 +93,8 @@ public class form1 extends JFrame {
 
     private void updateTable () {
         model.setRowCount(0); // Clear all existing rows in the table
-        for (String[] client : clients) {
-            model.addRow(client); // Add each client's data as a new row
+        for (String[] actor : actors) {
+            model.addRow(actor); // Add each client's data as a new row
         }
     }
 

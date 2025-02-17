@@ -12,9 +12,9 @@ import java.util.ArrayList;
 
 public class connect {
     // Database connection details
-    private static final String URL = "jdbc:mysql://localhost:3306/SimpleCompany"; // Path to the database
+    private static final String URL = "jdbc:mysql://localhost:3306/sakila"; // Path to the database
     private static final String USER = "root"; // Database username
-    private static final String PASSWORD = "root1234!"; // Database password
+    private static final String PASSWORD = "0000"; // Database password
 
     // Method for executing ANY QUERY. (see the parameters list)
     public static ArrayList<String[]> executeQuery(String query, String column1, String column2, String column3) {
@@ -47,21 +47,21 @@ public class connect {
     }
 
     // Method to update MULTIPLE COLUMNS in the database using transaction management
-    public static void updateDatabase(String clientName, String[] columns, String[] newValues) {
+    public static void updateDatabase(String actorName, String[] columns, String[] newValues) {
         if (columns.length != newValues.length) {
             System.out.println("Error: Column count does not match value count.");
             return;
         }
 
         // Construct the SQL query dynamically based on the number of columns to update
-        StringBuilder queryBuilder = new StringBuilder("UPDATE SimpleCompany.clients SET ");
+        StringBuilder queryBuilder = new StringBuilder("UPDATE sakila.actor SET");
         for (int i = 0; i < columns.length; i++) {
             queryBuilder.append(columns[i]).append(" = ?");
             if (i < columns.length - 1) {
                 queryBuilder.append(", ");
             }
         }
-        queryBuilder.append(" WHERE ClientName = ?");
+        queryBuilder.append("WHERE actor_id = ?");
 
         String query = queryBuilder.toString(); // Convert StringBuilder to a SQL string
 
@@ -78,13 +78,13 @@ public class connect {
             for (int i = 0; i < newValues.length; i++) {
                 pstmt.setString(i + 1, newValues[i]);
             }
-            pstmt.setString(newValues.length + 1, clientName); // Set the WHERE condition
+            pstmt.setString(newValues.length + 1, actorName); // Set the WHERE condition
 
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
                 connection.commit(); // Commit only if update was successful
-                System.out.println("Update committed successfully for client: " + clientName);
+                System.out.println("Update committed successfully for actor: " + actorName);
             } else {
                 connection.rollback(); // Rollback if no rows were affected
                 System.out.println("Update failed. Transaction rolled back.");
