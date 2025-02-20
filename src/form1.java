@@ -2,85 +2,70 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-/* UPDATES 17.02.2025
-* Generalized update logic using connect.updateDatabase(clientName, columns, newValues),
-* making it possible to update any column dynamically instead of being limited to a specific one.*/
+/* UPDATES 20.02.2025
+ * Public Static DefaultTableModel:
+ *      The DefaultTableModel was made public and static to make it accessible from the connect class.
+ *      This allows other classes or components that need to interact with the table model to do so directly
+ *      without needing to create an instance of the form.
+
+ * Add Column Button:
+ *      An event listener was added for the "add column" button.
+ *      When clicked, it prompts the user to input the name of a new column,
+ *      then adds that column to the table model and updates the database to reflect the new column.
+ *      The table is refreshed to show the newly added column.*/
+
 
 public class form1 extends JFrame {
-    // GUI components
     private JPanel panel1;
     private JTable table1;
     private JComboBox<String> comboBox1;
+    private JButton addColumnButton;
 
-    private DefaultTableModel model; // Table model to manage data dynamically
-    private ArrayList<String[]> actors; // List to store client data retrieved from the database
-    // Variable to store the old value before editing
+    public static DefaultTableModel model;
+    private ArrayList<String[]> actors;
 
-
-    // Constructor to initialize the GUI
     public form1() {
         setSize(700, 400);
         setContentPane(panel1);
-
         setVisible(true);
 
-        // Initialize the table model with column names
         model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"actor_id", "first_name", "last_name"}); // Updated the Column Names to match the database exactly.
-        table1.setModel(model); // Attach model to table
+        table1.setModel(model);
 
-        // Execute initial database query to fetch client data
-        actors = connect.executeQuery("SELECT * FROM sakila.actor", "actor_id", "first_name", "last_name");
-        // Populate the table with the retrieved data
+        actors = connect.executeQuery("SELECT * FROM sakila.actor");
         updateTable();
 
-        //ActionListener for the ComboBox (sorting options)
         comboBox1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Check which sorting option is selected
                 if (comboBox1.getSelectedIndex() == 0) {
-                    // Sort clients by Contact Email in ascending order
-                    actors = connect.executeQuery("SELECT * FROM sakila.actor ORDER BY first_name ASC", "actor_id", "first_name", "last_name");
                 } else if (comboBox1.getSelectedIndex() == 1) {
-                    // Sort clients by Contact Email in descending order
-                    actors = connect.executeQuery("SELECT * FROM sakila.actor ORDER BY last_name DESC", "actor_id", "first_name", "last_name");
                 }
-                updateTable(); // Refresh the table to display sorted data
+                updateTable();
             }
         });
 
-
-        // Add a custom cell editor to capture the old value
         table1.setDefaultEditor(Object.class, new DefaultCellEditor(new JTextField()) {
-            private String oldValue; // Store the old value before editing
+            private String oldValue;
 
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                oldValue = (value != null) ? value.toString() : ""; // Capture the old value
+                oldValue = (value != null) ? value.toString() : "";
                 return super.getTableCellEditorComponent(table, value, isSelected, row, column);
             }
 
             @Override
             public boolean stopCellEditing() {
-                // Capture the new value entered by the user
                 String newValue = getCellEditorValue().toString();
-
-                // Get the row and column indices
                 int row = table1.getEditingRow();
                 int column = table1.getEditingColumn();
-
-                // Get the name of the column being edited
                 String columnName = table1.getColumnName(column);
-
-                // Get the ClientName from the first column as an identifier
                 String clientName = (String) table1.getValueAt(row, 0);
 
-                // Only update if the value has changed
                 if (!newValue.equals(oldValue)) {
-                    // Call the updated updateDatabase method with a single column update
                     String[] columns = {columnName};
                     String[] newValues = {newValue};
                     connect.updateDatabase(clientName, columns, newValues);
@@ -89,12 +74,21 @@ public class form1 extends JFrame {
                 return super.stopCellEditing();
             }
         });
+        addColumnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newColumn = JOptionPane.showInputDialog("Enter the name of the new column");
+                connect.addColumn(newColumn);
+                model.addColumn(newColumn);
+                updateTable();
+            }
+        });
     }
 
     private void updateTable () {
-        model.setRowCount(0); // Clear all existing rows in the table
+        model.setRowCount(0);
         for (String[] actor : actors) {
-            model.addRow(actor); // Add each client's data as a new row
+            model.addRow(actor);
         }
     }
 
