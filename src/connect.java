@@ -32,10 +32,12 @@ public class connect {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
 
+            // to add colums automatically
             for (int i = 1; i <= columnCount; i++) {
-                form1.model.addColumn(metaData.getColumnName(i));
+                form1.model.addColumn(metaData.getColumnName(i)); // model from form1.java
             }
 
+            // to add rows.
             while (rs.next()) {
                 String[] row = new String[columnCount];
                 for (int i = 0; i < columnCount; i++) {
@@ -52,7 +54,7 @@ public class connect {
     public static void addColumn(String columnName) {
         Connection connection = null;
         Statement stmt = null;
-        String query = "ALTER TABLE sakila.actor ADD COLUMN " + columnName + " INT";
+        String query = "ALTER TABLE sakila.actor ADD COLUMN " + columnName + " INT"; // hardcoded int
 
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
