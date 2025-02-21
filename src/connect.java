@@ -1,16 +1,15 @@
+import javax.imageio.stream.ImageInputStream;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
-/* UPDATES 20.02.2025
- * The logic of the executeQuery has been updated:
- *   It used to get the column names from the form1.java as hardcoded,
- *   now it gets the column names automatically by retrieving metadata from the ResultSet,
- *   ensuring flexibility for different queries and database tables.
-
- * addColumn method
- *   This method dynamically adds a new column to the "actor" table in the database.
- *   It constructs and executes an ALTER TABLE query, ensuring database schema modifications can be made programmatically.
+/* UPDATES 24.02.2025
+ * addActor method
+ *   This method inserts a new actor into the "actor" table in the database.
+ *   It uses a prepared statement to insert first name, last name, hashed password, and image as a binary stream.
  * */
 
 
@@ -51,10 +50,10 @@ public class connect {
         return results;
     }
 
-    public static void addColumn(String columnName) {
+    public static void addColumn(String columnName, String dataType) {
         Connection connection = null;
         Statement stmt = null;
-        String query = "ALTER TABLE sakila.actor ADD COLUMN " + columnName + " INT"; // hardcoded int
+        String query = "ALTER TABLE sakila.actor ADD COLUMN " + columnName + " " + dataType; // hardcoded int
 
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -62,7 +61,7 @@ public class connect {
             stmt = connection.createStatement();
             stmt.executeUpdate(query);
             connection.commit();
-            System.out.println("Column '" + columnName + "' added successfully.");
+            System.out.println("Column '" + columnName + " with datatype: " + dataType + "' added successfully.");
         } catch (SQLException ex) {
             try {
                 if (connection != null) {
@@ -130,5 +129,57 @@ public class connect {
                 rollbackEx.printStackTrace();
             }
         }
+    }
+
+    public static void addActor(String firstName, String lastName, InputStream img, String hashPassword){
+        // SQL query for inserting actor data into the database
+        String query = "INSERT INTO actor (first_name, last_name, img, password) VALUES (?, ?, ?, ?)";
+
+// Declare variables for database connection and prepared statement
+        Connection connection = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            // Establish a connection to the database
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            // Disable auto-commit to manually handle transactions
+            connection.setAutoCommit(false);
+
+            // Prepare the SQL query
+            pstmt = connection.prepareStatement(query);
+
+            // Set the values for the query placeholders using the input data
+            pstmt.setString(1, firstName);  // Set first name
+            pstmt.setString(2, lastName);   // Set last name
+            pstmt.setBinaryStream(3, img);  // Set the image as a binary stream
+            pstmt.setString(4, hashPassword);  // Set the hashed password
+
+            // Execute the query and get the number of rows affected
+            int rowsAffected = pstmt.executeUpdate();
+
+            // If the insertion is successful, commit the transaction
+            if (rowsAffected > 0) {
+                connection.commit();
+                System.out.println("Insertion committed successfully for actor: " + firstName);
+            } else {
+                // If insertion fails, roll back the transaction
+                connection.rollback();
+                System.out.println("Insertion failed. Transaction rolled back.");
+            }
+        } catch (SQLException ex) {
+            // Handle SQL exceptions
+            try {
+                if (connection != null) {
+                    // If an error occurs, roll back the transaction
+                    connection.rollback();
+                }
+                System.out.println("SQL Error: " + ex.getMessage());
+            } catch (SQLException rollbackEx) {
+                // Print stack trace if there is an error during rollback
+                rollbackEx.printStackTrace();
+            }
+        }
+
     }
 }

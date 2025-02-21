@@ -23,6 +23,7 @@ public class form1 extends JFrame {
     private JTable table1;
     private JComboBox<String> comboBox1;
     private JButton addColumnButton;
+    private JComboBox comboBox2;
 
     public static DefaultTableModel model;
     private ArrayList<String[]> actors;
@@ -77,10 +78,13 @@ public class form1 extends JFrame {
         addColumnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!comboBox2.getSelectedItem().toString().equals("select")){
                 String newColumn = JOptionPane.showInputDialog("Enter the name of the new column");
-                connect.addColumn(newColumn);
+                String dataType = comboBox2.getSelectedItem().toString();
+                connect.addColumn(newColumn, dataType);
                 model.addColumn(newColumn);
                 updateTable();
+                }
             }
         });
     }
