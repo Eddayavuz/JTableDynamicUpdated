@@ -1,7 +1,12 @@
+import org.mindrot.jbcrypt.BCrypt;
+
+import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
@@ -131,7 +136,7 @@ public class connect {
         }
     }
 
-    public static void addActor(String firstName, String lastName, InputStream img, String hashPassword){
+    public static void addActor(String firstName, String lastName, InputStream img, String hashPassword) {
         // SQL query for inserting actor data into the database
         String query = "INSERT INTO actor (first_name, last_name, img, password) VALUES (?, ?, ?, ?)";
 
@@ -182,4 +187,57 @@ public class connect {
         }
 
     }
+
+    public static User login(String id, String password) {
+        User user = null;
+        String query = "SELECT actor_id, first_name, img, password FROM sakila.actor WHERE actor_id = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = connection.prepareStatement(query);
+        ) {
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String hashedPassword = rs.getString("password");
+                    if (BCrypt.checkpw(password, hashedPassword)) {
+                        // Get the image as a binary stream and store it
+                        InputStream imgStream = rs.getBinaryStream("img");
+                        user = new User(rs.getString("actor_id"), rs.getString("first_name"), imgStream);
+                    }
+                }
+            }
+            return user;
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+        return user;
+    }
 }
+class User {
+    private String actor_id;
+    private String first_name;
+    private InputStream img;  // Use InputStream for image data
+
+    public User(String id, String first_name, InputStream img){
+        this.actor_id = id;
+        this.first_name = first_name;
+        this.img = img;
+    }
+
+    public String getFirst_name(){
+        return first_name;
+    }
+
+
+    public ImageIcon getImageIcon() {
+        try {
+            // Convert InputStream to BufferedImage
+            BufferedImage image = ImageIO.read(img);
+            // Return ImageIcon from the BufferedImage
+            return new ImageIcon(image);
+        } catch (IOException e) {
+            System.out.println("Error loading image: " + e.getMessage());
+            return null;
+        }
+    }
+}
+

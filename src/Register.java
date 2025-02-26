@@ -28,12 +28,12 @@ public class Register extends JFrame {
     private JButton selectImageButton;
     private JLabel imageLabel;
     private JPanel panel;
+    private JButton loginInsteadButton;
 
     public Register() {
         setSize(500, 500);
         setContentPane(panel);
         setVisible(true);
-
 
         selectImageButton.addActionListener(new ActionListener() {
             @Override
@@ -120,5 +120,11 @@ public class Register extends JFrame {
                     }
                 }
             });
+        loginInsteadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new login();
+            }
+        });
     }
     }
