@@ -8,15 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
-/* UPDATES 24.02.2025
- * this form allows the user to add a new record(row) into the actor table.
- * 1. I updated my table to add an img column and a password column.
- * 2. I added necessary fields to my form design
- * 3. I created an event listener for the button to read information from those fields.
- * 4. I passed the information to the method called addActor in my connect.java
- *
- * Before we explore the addActor method, we will talk about how to handle password and image.
- * Scroll down to see the event listener for both selectImage and register buttons.
+/* UPDATES 27.02.2025
+ * I added login instead button which opens the login form.
  * */
 
 
