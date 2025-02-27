@@ -11,11 +11,16 @@ import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
-/* UPDATES 24.02.2025
- * addActor method
- *   This method inserts a new actor into the "actor" table in the database.
- *   It uses a prepared statement to insert first name, last name, hashed password, and image as a binary stream.
- * */
+/* UPDATES 27.02.2025
+ * login method
+ *   This method verifies the actor's credentials by checking the hashed password using BCrypt.
+ *   If the login is successful, it returns a User object containing the actor's ID, first name, and image as an InputStream.
+ *   The image can be used for display in the application using the getImageIcon method.
+ *
+ * getImageIcon method (within User class)
+ *   This method converts the InputStream (image) stored in the database into a BufferedImage.
+ *   It then creates and returns an ImageIcon, which can be used in GUI components like JLabel for image display.
+ */
 
 
 
