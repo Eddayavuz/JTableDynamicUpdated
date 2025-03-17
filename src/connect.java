@@ -175,7 +175,6 @@ public class connect {
             } else {
                 // If insertion fails, roll back the transaction
                 connection.rollback();
-                System.out.println("Insertion failed. Transaction rolled back.");
             }
         } catch (SQLException ex) {
             // Handle SQL exceptions

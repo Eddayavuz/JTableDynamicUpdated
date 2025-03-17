@@ -107,6 +107,12 @@ public class Register extends JFrame {
                     // If all fields are filled, proceed to add the actor, otherwise show a warning
                     if (allFieldsFilled) {
                         connect.addActor(firstName, lastName, imageInputStream, hashedPassword);
+                        if(System.console() != null) // check if there is a success message on the console.
+                        {
+                            new login(); // show login page
+                            setVisible(false); // hide register page
+                        }
+
                     } else {
                         // Show a message prompting the user to fill in all the fields
                         JOptionPane.showMessageDialog(null, "Fill all the fields!");

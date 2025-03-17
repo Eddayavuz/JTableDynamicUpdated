@@ -19,6 +19,7 @@ public class login extends JFrame{
                 if (user != null) {
                     JOptionPane.showMessageDialog(null, "Successfully logged in as " + user.getFirst_name(), "Login Success", JOptionPane.INFORMATION_MESSAGE);
                     new Welcome(user);
+                    setVisible(false);
                 } else {
                     JOptionPane.showMessageDialog(null, "Login failed. Invalid credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
                 }
