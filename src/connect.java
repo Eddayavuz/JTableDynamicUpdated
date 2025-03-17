@@ -180,7 +180,7 @@ public class connect {
         } catch (SQLException ex) {
             // Handle SQL exceptions
             try {
-                if (connection != null) {
+                if (connection == null) {
                     // If an error occurs, roll back the transaction
                     connection.rollback();
                 }
@@ -190,7 +190,6 @@ public class connect {
                 rollbackEx.printStackTrace();
             }
         }
-
     }
 
     public static User login(String id, String password) {
@@ -231,7 +230,6 @@ class User {
     public String getFirst_name(){
         return first_name;
     }
-
 
     public ImageIcon getImageIcon() {
         try {
